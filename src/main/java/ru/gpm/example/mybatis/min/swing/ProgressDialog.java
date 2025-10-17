@@ -56,7 +56,9 @@ public class ProgressDialog extends JDialog {
     }
 
     private void startAnimation() {
-        animationTimer = new Timer(50, new ActionListener() {
+        // Изменяем интервал так, чтобы один цикл занимал 30 секунд
+        // 30 секунд = 30000ms, делим на 100 шагов = 300ms на шаг
+        animationTimer = new Timer(300, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (shouldClose.get()) {
