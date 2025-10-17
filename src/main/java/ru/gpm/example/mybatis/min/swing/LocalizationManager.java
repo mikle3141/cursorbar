@@ -26,12 +26,12 @@ public class LocalizationManager {
     
     private void loadConfiguration() {
         properties = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("application.properties")) {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("plugin.properties")) {
             if (input != null) {
                 properties.load(input);
             }
         } catch (IOException e) {
-            System.err.println("Error loading application.properties: " + e.getMessage());
+            System.err.println("Error loading plugin.properties: " + e.getMessage());
         }
         
         currentLanguage = properties.getProperty("app.language", "en");
