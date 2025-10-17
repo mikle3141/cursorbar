@@ -7,10 +7,11 @@ import java.awt.event.ActionListener;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Главное окно приложения для демонстрации модального диалога с ProgressBar
+ * Главное окно приложения для проверки доступности веб-сайтов
  */
 public class MainWindow extends JFrame {
-    private ProgressDialog progressDialog;
+    private WebsiteCheckDialog websiteCheckDialog;
+    private JButton checkWebsiteButton;
     private JButton showProgressButton;
     private JButton signalCloseButton;
     private JLabel statusLabel;
@@ -22,16 +23,17 @@ public class MainWindow extends JFrame {
     }
 
     private void initializeComponents() {
-        setTitle("Демонстрация модального окна с ProgressBar");
+        setTitle("Проверка доступности веб-сайтов");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(450, 350);
         setLocationRelativeTo(null);
 
-        showProgressButton = new JButton("Показать модальное окно");
+        checkWebsiteButton = new JButton("Проверить доступность сайта");
+        showProgressButton = new JButton("Показать демо ProgressBar");
         signalCloseButton = new JButton("Закрыть по сигналу");
         signalCloseButton.setEnabled(false);
         
-        statusLabel = new JLabel("Готов к работе", JLabel.CENTER);
+        statusLabel = new JLabel("Введите URL сайта для проверки", JLabel.CENTER);
         statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
     }
 
@@ -39,6 +41,7 @@ public class MainWindow extends JFrame {
         setLayout(new BorderLayout());
         
         JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(checkWebsiteButton);
         buttonPanel.add(showProgressButton);
         buttonPanel.add(signalCloseButton);
         
@@ -51,6 +54,13 @@ public class MainWindow extends JFrame {
     }
 
     private void setupEventHandlers() {
+        checkWebsiteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showWebsiteCheckDialog();
+            }
+        });
+
         showProgressButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,6 +76,35 @@ public class MainWindow extends JFrame {
         });
     }
 
+    private void showWebsiteCheckDialog() {
+        // Запрашиваем URL у пользователя
+        String websiteUrl = JOptionPane.showInputDialog(
+            this,
+            "Введите URL сайта для проверки:",
+            "Проверка доступности сайта",
+            JOptionPane.QUESTION_MESSAGE
+        );
+        
+        if (websiteUrl != null && !websiteUrl.trim().isEmpty()) {
+            checkWebsiteButton.setEnabled(false);
+            statusLabel.setText("Проверяем доступность сайта: " + websiteUrl);
+            
+            // Создаем и показываем диалог проверки сайта
+            SwingUtilities.invokeLater(() -> {
+                websiteCheckDialog = new WebsiteCheckDialog(this, websiteUrl.trim());
+                websiteCheckDialog.setVisible(true);
+                
+                // После закрытия диалога обновляем UI
+                SwingUtilities.invokeLater(() -> {
+                    checkWebsiteButton.setEnabled(true);
+                    statusLabel.setText("Проверка завершена");
+                });
+            });
+        } else if (websiteUrl != null) {
+            statusLabel.setText("URL не может быть пустым");
+        }
+    }
+
     private void showProgressDialog() {
         showProgressButton.setEnabled(false);
         signalCloseButton.setEnabled(true);
@@ -74,7 +113,7 @@ public class MainWindow extends JFrame {
         // Создаем и показываем модальный диалог в отдельном потоке
         CompletableFuture.runAsync(() -> {
             SwingUtilities.invokeLater(() -> {
-                progressDialog = new ProgressDialog(this, "Информационное окно");
+                ProgressDialog progressDialog = new ProgressDialog(this, "Информационное окно");
                 progressDialog.setVisible(true);
                 
                 // После закрытия диалога обновляем UI
@@ -88,10 +127,9 @@ public class MainWindow extends JFrame {
     }
 
     private void signalCloseProgressDialog() {
-        if (progressDialog != null) {
-            progressDialog.signalClose();
-            statusLabel.setText("Отправлен сигнал закрытия...");
-        }
+        // Эта функция теперь не используется для проверки сайтов
+        // так как проверка завершается автоматически
+        statusLabel.setText("Функция недоступна для проверки сайтов");
     }
 
     public static void main(String[] args) {
