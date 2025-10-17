@@ -21,10 +21,13 @@ public class WebsiteCheckDialog extends JDialog {
     private String websiteUrl;
     private CompletableFuture<WebsiteChecker.CheckResult> checkFuture;
     private JLabel statusLabel;
+    private LocalizationManager localization;
 
     public WebsiteCheckDialog(Frame parent, String websiteUrl) {
-        super(parent, "Проверка доступности сайта", true);
+        super(parent, "", true);
         this.websiteUrl = websiteUrl;
+        this.localization = LocalizationManager.getInstance();
+        setTitle(localization.getString("dialog.check.title"));
         initializeComponents();
         setupLayout();
         startWebsiteCheck();
@@ -36,9 +39,9 @@ public class WebsiteCheckDialog extends JDialog {
         // Создаем круговой ProgressBar
         progressBar = new CircularProgressBar();
         progressBar.setMaximum(100);
-        progressBar.setText("Проверка...");
+        progressBar.setText(localization.getString("dialog.check.checking"));
         
-        statusLabel = new JLabel("Проверяем доступность сайта: " + websiteUrl, JLabel.CENTER);
+        statusLabel = new JLabel(localization.getString("dialog.check.status") + ": " + websiteUrl, JLabel.CENTER);
         statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
     }
 
@@ -51,7 +54,7 @@ public class WebsiteCheckDialog extends JDialog {
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        JLabel titleLabel = new JLabel("Проверка доступности сайта", JLabel.CENTER);
+        JLabel titleLabel = new JLabel(localization.getString("dialog.check.title"), JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         
         // Центрируем круговой прогресс-бар
@@ -103,7 +106,7 @@ public class WebsiteCheckDialog extends JDialog {
                     // Если проверка не завершилась за 30 секунд, прерываем её
                     checkFuture.cancel(true);
                     WebsiteChecker.CheckResult timeoutResult = new WebsiteChecker.CheckResult(
-                        false, "Проверка прервана: превышено время ожидания (30 секунд)", 30000);
+                        false, localization.getString("result.timeout"), 30000);
                     closeDialogWithResult(timeoutResult);
                 }
             }
@@ -129,15 +132,20 @@ public class WebsiteCheckDialog extends JDialog {
 
     private void showResult(WebsiteChecker.CheckResult result) {
         // Создаем диалог с результатом
-        String title = result.isAvailable() ? "Сайт доступен" : "Сайт недоступен";
+        String title = result.isAvailable() ? 
+            localization.getString("result.available.title") : 
+            localization.getString("result.unavailable.title");
         String message = String.format(
             "<html><body style='width: 300px; text-align: center;'>" +
             "<h3>%s</h3>" +
-            "<p><b>URL:</b> %s</p>" +
-            "<p><b>Результат:</b> %s</p>" +
-            "<p><b>Время ответа:</b> %d мс</p>" +
+            "<p><b>%s:</b> %s</p>" +
+            "<p><b>%s:</b> %s</p>" +
+            "<p><b>%s:</b> %d мс</p>" +
             "</body></html>",
-            title, websiteUrl, result.getMessage(), result.getResponseTime()
+            title, 
+            localization.getString("result.url"), websiteUrl, 
+            localization.getString("result.status"), result.getMessage(), 
+            localization.getString("result.response.time"), result.getResponseTime()
         );
         
         JOptionPane.showMessageDialog(

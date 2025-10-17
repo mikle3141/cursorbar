@@ -54,6 +54,7 @@ public class WebsiteChecker {
      * @return результат проверки
      */
     public static CheckResult checkWebsite(String urlString) {
+        LocalizationManager localization = LocalizationManager.getInstance();
         long startTime = System.currentTimeMillis();
         
         try {
@@ -80,38 +81,38 @@ public class WebsiteChecker {
             
             if (responseCode >= 200 && responseCode < 400) {
                 return new CheckResult(true, 
-                    String.format("Сайт доступен (код ответа: %d, время ответа: %d мс)", 
+                    String.format(localization.getString("result.available.title") + " (код ответа: %d, время ответа: %d мс)", 
                         responseCode, responseTime), responseTime);
             } else {
                 return new CheckResult(false, 
-                    String.format("Сайт недоступен (код ответа: %d, время ответа: %d мс)", 
+                    String.format(localization.getString("result.unavailable.title") + " (код ответа: %d, время ответа: %d мс)", 
                         responseCode, responseTime), responseTime);
             }
             
         } catch (UnknownHostException e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format("Сайт недоступен: не удается найти хост '%s' (%d мс)", 
+                String.format(localization.getString("error.unknown.host") + " '%s' (%d мс)", 
                     urlString, endTime - startTime), endTime - startTime);
         } catch (ConnectException e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format("Сайт недоступен: ошибка подключения (%d мс)", 
+                String.format(localization.getString("error.connection") + " (%d мс)", 
                     endTime - startTime), endTime - startTime);
         } catch (SocketTimeoutException e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format("Сайт недоступен: превышено время ожидания (%d мс)", 
+                String.format(localization.getString("error.timeout") + " (%d мс)", 
                     endTime - startTime), endTime - startTime);
         } catch (IOException e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format("Сайт недоступен: ошибка ввода-вывода - %s (%d мс)", 
+                String.format(localization.getString("error.io") + " - %s (%d мс)", 
                     e.getMessage(), endTime - startTime), endTime - startTime);
         } catch (Exception e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format("Сайт недоступен: неожиданная ошибка - %s (%d мс)", 
+                String.format(localization.getString("error.unexpected") + " - %s (%d мс)", 
                     e.getMessage(), endTime - startTime), endTime - startTime);
         }
     }

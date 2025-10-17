@@ -17,9 +17,11 @@ public class ProgressDialog extends JDialog {
     private int animationStep = 0;
     private static final int ANIMATION_STEPS = 100;
     private static final int TIMEOUT_SECONDS = 30;
+    private LocalizationManager localization;
 
     public ProgressDialog(Frame parent, String title) {
         super(parent, title, true);
+        this.localization = LocalizationManager.getInstance();
         initializeComponents();
         setupLayout();
         startAnimation();
@@ -30,7 +32,7 @@ public class ProgressDialog extends JDialog {
         // Создаем круговой ProgressBar
         progressBar = new CircularProgressBar();
         progressBar.setMaximum(100);
-        progressBar.setText("Загрузка...");
+        progressBar.setText(localization.getString("progress.loading"));
     }
 
     private void setupLayout() {
@@ -42,7 +44,7 @@ public class ProgressDialog extends JDialog {
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        JLabel titleLabel = new JLabel("Пожалуйста, подождите...", JLabel.CENTER);
+        JLabel titleLabel = new JLabel(localization.getString("progress.title"), JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         
         // Центрируем круговой прогресс-бар

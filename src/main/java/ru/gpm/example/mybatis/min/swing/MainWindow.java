@@ -15,25 +15,27 @@ public class MainWindow extends JFrame {
     private JButton showProgressButton;
     private JButton signalCloseButton;
     private JLabel statusLabel;
+    private LocalizationManager localization;
 
     public MainWindow() {
+        localization = LocalizationManager.getInstance();
         initializeComponents();
         setupLayout();
         setupEventHandlers();
     }
 
     private void initializeComponents() {
-        setTitle("Проверка доступности веб-сайтов");
+        setTitle(localization.getString("app.title"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450, 350);
         setLocationRelativeTo(null);
 
-        checkWebsiteButton = new JButton("Проверить доступность сайта");
-        showProgressButton = new JButton("Показать демо ProgressBar");
-        signalCloseButton = new JButton("Закрыть по сигналу");
+        checkWebsiteButton = new JButton(localization.getString("button.check.website"));
+        showProgressButton = new JButton(localization.getString("button.show.demo"));
+        signalCloseButton = new JButton(localization.getString("button.close.signal"));
         signalCloseButton.setEnabled(false);
         
-        statusLabel = new JLabel("Введите URL сайта для проверки", JLabel.CENTER);
+        statusLabel = new JLabel(localization.getString("status.ready"), JLabel.CENTER);
         statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
     }
 
@@ -80,14 +82,14 @@ public class MainWindow extends JFrame {
         // Запрашиваем URL у пользователя
         String websiteUrl = JOptionPane.showInputDialog(
             this,
-            "Введите URL сайта для проверки:",
-            "Проверка доступности сайта",
+            localization.getString("dialog.url.message"),
+            localization.getString("dialog.url.title"),
             JOptionPane.QUESTION_MESSAGE
         );
         
         if (websiteUrl != null && !websiteUrl.trim().isEmpty()) {
             checkWebsiteButton.setEnabled(false);
-            statusLabel.setText("Проверяем доступность сайта: " + websiteUrl);
+            statusLabel.setText(localization.getString("status.checking") + ": " + websiteUrl);
             
             // Создаем и показываем диалог проверки сайта
             SwingUtilities.invokeLater(() -> {
@@ -97,30 +99,30 @@ public class MainWindow extends JFrame {
                 // После закрытия диалога обновляем UI
                 SwingUtilities.invokeLater(() -> {
                     checkWebsiteButton.setEnabled(true);
-                    statusLabel.setText("Проверка завершена");
+                    statusLabel.setText(localization.getString("status.completed"));
                 });
             });
         } else if (websiteUrl != null) {
-            statusLabel.setText("URL не может быть пустым");
+            statusLabel.setText(localization.getString("status.empty.url"));
         }
     }
 
     private void showProgressDialog() {
         showProgressButton.setEnabled(false);
         signalCloseButton.setEnabled(true);
-        statusLabel.setText("Модальное окно открыто...");
+        statusLabel.setText(localization.getString("status.modal.open"));
         
         // Создаем и показываем модальный диалог в отдельном потоке
         CompletableFuture.runAsync(() -> {
             SwingUtilities.invokeLater(() -> {
-                ProgressDialog progressDialog = new ProgressDialog(this, "Информационное окно");
+                ProgressDialog progressDialog = new ProgressDialog(this, localization.getString("progress.title"));
                 progressDialog.setVisible(true);
                 
                 // После закрытия диалога обновляем UI
                 SwingUtilities.invokeLater(() -> {
                     showProgressButton.setEnabled(true);
                     signalCloseButton.setEnabled(false);
-                    statusLabel.setText("Модальное окно закрыто");
+                    statusLabel.setText(localization.getString("status.modal.closed"));
                 });
             });
         });
@@ -129,7 +131,7 @@ public class MainWindow extends JFrame {
     private void signalCloseProgressDialog() {
         // Эта функция теперь не используется для проверки сайтов
         // так как проверка завершается автоматически
-        statusLabel.setText("Функция недоступна для проверки сайтов");
+        statusLabel.setText(localization.getString("status.signal.unavailable"));
     }
 
     public static void main(String[] args) {
