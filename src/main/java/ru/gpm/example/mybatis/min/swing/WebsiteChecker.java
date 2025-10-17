@@ -81,39 +81,39 @@ public class WebsiteChecker {
             
             if (responseCode >= 200 && responseCode < 400) {
                 return new CheckResult(true, 
-                    String.format(localization.getString("result.available.title") + " (код ответа: %d, время ответа: %d мс)", 
-                        responseCode, responseTime), responseTime);
+                    localization.getString("result.available.message", responseCode, responseTime), 
+                    responseTime);
             } else {
                 return new CheckResult(false, 
-                    String.format(localization.getString("result.unavailable.title") + " (код ответа: %d, время ответа: %d мс)", 
-                        responseCode, responseTime), responseTime);
+                    localization.getString("result.unavailable.message", responseCode, responseTime), 
+                    responseTime);
             }
             
         } catch (UnknownHostException e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format(localization.getString("error.unknown.host") + " '%s' (%d мс)", 
-                    urlString, endTime - startTime), endTime - startTime);
+                localization.getString("error.unknown.host.with.time", urlString, endTime - startTime), 
+                endTime - startTime);
         } catch (ConnectException e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format(localization.getString("error.connection") + " (%d мс)", 
-                    endTime - startTime), endTime - startTime);
+                localization.getString("error.connection.with.time", endTime - startTime), 
+                endTime - startTime);
         } catch (SocketTimeoutException e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format(localization.getString("error.timeout") + " (%d мс)", 
-                    endTime - startTime), endTime - startTime);
+                localization.getString("error.timeout.with.time", endTime - startTime), 
+                endTime - startTime);
         } catch (IOException e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format(localization.getString("error.io") + " - %s (%d мс)", 
-                    e.getMessage(), endTime - startTime), endTime - startTime);
+                localization.getString("error.io.with.time", e.getMessage(), endTime - startTime), 
+                endTime - startTime);
         } catch (Exception e) {
             long endTime = System.currentTimeMillis();
             return new CheckResult(false, 
-                String.format(localization.getString("error.unexpected") + " - %s (%d мс)", 
-                    e.getMessage(), endTime - startTime), endTime - startTime);
+                localization.getString("error.unexpected.with.time", e.getMessage(), endTime - startTime), 
+                endTime - startTime);
         }
     }
 }
