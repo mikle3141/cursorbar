@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'ru.gpm.example'
+version = '1.0.0'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Основные зависимости для Swing приложения
+    // В данном проекте используются только стандартные библиотеки Java
+}
+
+application {
+    mainClass = 'ru.gpm.example.mybatis.min.swing.SwingApplication'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+// Настройка для запуска приложения
+run {
+    standardInput = System.in
+}
+
+// Создание исполняемого JAR
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'ru.gpm.example.mybatis.min.swing.SwingApplication'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Задача для очистки
+clean {
+    delete 'build'
+}
